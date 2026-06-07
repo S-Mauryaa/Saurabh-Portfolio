@@ -56,8 +56,17 @@ function writeFileData(filePath, data) {
 // --- Unified data access helpers ---
 async function getPortfolioData() {
   if (useDB) {
-    const doc = await PortfolioData.findOne({ _id: 'portfolio_config' }).lean();
-    return doc ? (doc.data || {}) : {};
+    let doc = await PortfolioData.findOne({ _id: 'portfolio_config' }).lean();
+    if (!doc) {
+      console.log('🌱 MongoDB portfolio_config not found. Seeding from local data.json...');
+      const localData = readFileData(DATA_FILE, {});
+      if (Object.keys(localData).length > 0) {
+        await savePortfolioData(localData);
+        return localData;
+      }
+      return {};
+    }
+    return doc.data || {};
   }
   return readFileData(DATA_FILE, {});
 }

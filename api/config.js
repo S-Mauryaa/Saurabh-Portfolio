@@ -15,8 +15,23 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      const doc = await PortfolioData.findOne({ _id: 'portfolio_config' }).lean();
-      if (!doc) return res.json({});
+      let doc = await PortfolioData.findOne({ _id: 'portfolio_config' }).lean();
+      if (!doc) {
+        console.log('🌱 MongoDB portfolio_config not found. Seeding from local data.json...');
+        const fs = require('fs');
+        const path = require('path');
+        const localDataPath = path.join(process.cwd(), 'data.json');
+        if (fs.existsSync(localDataPath)) {
+          const localData = JSON.parse(fs.readFileSync(localDataPath, 'utf8'));
+          await PortfolioData.findOneAndUpdate(
+            { _id: 'portfolio_config' },
+            { $set: { data: localData, updatedAt: new Date() } },
+            { upsert: true, new: true }
+          );
+          return res.json(localData);
+        }
+        return res.json({});
+      }
       return res.json(doc.data || {});
     } catch (err) {
       console.error('GET /api/config error:', err);
