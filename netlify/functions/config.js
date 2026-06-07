@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import connectDB from '../../lib/mongodb';
 import { PortfolioData } from '../../lib/models';
 
@@ -22,9 +24,8 @@ export default async (req, context) => {
       let doc = await PortfolioData.findOne({ _id: 'portfolio_config' }).lean();
       if (!doc) {
         console.log('🌱 MongoDB portfolio_config not found. Seeding from local data.json...');
-        const fs = require('fs');
-        const path = require('path');
         const localDataPath = path.join(process.cwd(), 'data.json');
+
         if (fs.existsSync(localDataPath)) {
           const localData = JSON.parse(fs.readFileSync(localDataPath, 'utf8'));
           await PortfolioData.findOneAndUpdate(
