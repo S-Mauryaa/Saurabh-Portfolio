@@ -1,20 +1,8 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/*.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    { "src": "/api/config", "dest": "/api/config.js" },
-    { "src": "/api/login", "dest": "/api/login.js" },
-    { "src": "/api/contact", "dest": "/api/contact.js" },
-    { "src": "/api/messages", "dest": "/api/messages.js" },
-    { "src": "/api/fetch-metadata", "dest": "/api/fetch-metadata.js" },
-    { "src": "/api/fetch-coding-stats", "dest": "/api/fetch-coding-stats.js" },
-    { "src": "/admin", "dest": "/admin.html" },
-    { "src": "/", "dest": "/home.html" },
-    { "src": "/(.*)", "dest": "/$1" }
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/home.html" },
+    { "source": "/admin", "destination": "/admin.html" }
   ]
 }
+
