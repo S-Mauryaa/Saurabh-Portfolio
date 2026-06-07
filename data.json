@@ -1,0 +1,389 @@
+{
+  "profile": {
+    "greeting": "Hello, I'm",
+    "name": "SAURABH MAURYA",
+    "subtitle": "Software Engineer · AI/ML Engineer",
+    "description": "Building intelligent systems, scalable web applications, and impactful digital experiences through Artificial Intelligence and Full Stack Development.",
+    "available": "Available for opportunities",
+    "resumeUrl": "#",
+    "aboutParagraphs": [
+      "I'm <strong style=\"color:var(--text-1)\">Saurabh Maurya</strong>, a 3rd Year B.Tech student specializing in Artificial Intelligence and Machine Learning. I build systems that think, learn, and scale.",
+      "Passionate about the intersection of AI and real-world impact — from healthcare to developer tools. Currently leading APEX Club and contributing to AI research.",
+      "When I'm not shipping code, I'm behind a camera capturing stories or mentoring the next generation of engineers."
+    ],
+    "aboutTags": [
+      "AI/ML Engineer",
+      "MERN Developer",
+      "Club Head APEX",
+      "Photographer",
+      "Open Source",
+      "B.Tech AI&ML"
+    ]
+  },
+  "stats": [
+    {
+      "label": "Years Learning",
+      "target": 3
+    },
+    {
+      "label": "Projects Built",
+      "target": 10
+    },
+    {
+      "label": "Technologies",
+      "target": 20
+    },
+    {
+      "label": "Hackathons",
+      "target": 5
+    }
+  ],
+  "skills": {
+    "Frontend": [
+      "HTML5 / CSS3",
+      "JavaScript (ES6+)",
+      "React.js",
+      "Tailwind CSS"
+    ],
+    "Backend": [
+      "Node.js",
+      "Express.js",
+      "REST APIs"
+    ],
+    "Database": [
+      "MongoDB",
+      "MySQL"
+    ],
+    "AI / ML": [
+      "Machine Learning",
+      "Deep Learning",
+      "Computer Vision",
+      "Federated Learning",
+      "Data Analysis"
+    ],
+    "Programming": [
+      "Python",
+      "C++",
+      "JavaScript"
+    ],
+    "Tools": [
+      "Git / GitHub",
+      "VS Code",
+      "Postman",
+      "Linux"
+    ]
+  },
+  "timeline": [
+    {
+      "period": "2023 — Present",
+      "title": "Club Head — APEX",
+      "sub": "Technical Leadership · Event Management · Mentorship",
+      "points": [
+        "Leading all technical initiatives and innovation programs",
+        "Managing and organizing technical events and workshops",
+        "Organizing hands-on workshops for 100+ students",
+        "Mentoring junior students in software development",
+        "Bridging academic learning with real-world projects"
+      ]
+    },
+    {
+      "period": "2022 — Present",
+      "title": "Event Photographer",
+      "sub": "Creative Storytelling · Content Creation",
+      "points": [
+        "Covering major college events and technical fests",
+        "Creative storytelling through visual composition",
+        "Building a personal photography portfolio"
+      ]
+    },
+    {
+      "period": "2024 — Present",
+      "title": "AI Research Project — Parkinson's Detection",
+      "sub": "Research · Python · Federated Learning",
+      "points": [
+        "Developing multimodal AI for early Parkinson's detection",
+        "Implementing privacy-preserving federated learning",
+        "Cross-modal learning with voice and clinical data"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "icon": "🧠",
+      "title": "Parkinson's Disease Detection AI",
+      "desc": "Multimodal AI system using voice recordings and clinical reports for early detection via cross-modal learning and privacy-preserving federated learning.",
+      "tags": [
+        "Python",
+        "Federated Learning",
+        "Deep Learning",
+        "CV"
+      ],
+      "demo": "#",
+      "github": "#"
+    },
+    {
+      "icon": "📸",
+      "title": "Instagram Clone",
+      "desc": "A responsive social media platform clone with authentication, modern UI components, real-time features and complete frontend architecture.",
+      "tags": [
+        "HTML",
+        "CSS",
+        "JavaScript"
+      ],
+      "demo": "#",
+      "github": "#"
+    },
+    {
+      "icon": "🌐",
+      "title": "Personal Portfolio",
+      "desc": "This very site — a futuristic AI-OS-inspired portfolio with 3D effects, interactive terminal, AI chatbot, and cinematic animations.",
+      "tags": [
+        "React",
+        "Three.js",
+        "Tailwind CSS"
+      ],
+      "demo": "#",
+      "github": "#"
+    }
+  ],
+  "githubStats": {
+    "totalCommits": "500+",
+    "repos": "10+",
+    "streak": "30+",
+    "hackathons": "5"
+  },
+  "now": {
+    "Learning": [
+      "Advanced Federated Learning techniques",
+      "Large Language Model fine-tuning",
+      "System Design & Architecture",
+      "Competitive Programming (DSA)"
+    ],
+    "Building": [
+      "Parkinson's AI Detection System",
+      "APEX Club Portal (Full Stack)",
+      "AI-powered productivity tools",
+      "This futuristic portfolio"
+    ],
+    "Reading": [
+      "Designing Data-Intensive Applications",
+      "Deep Learning — Ian Goodfellow",
+      "The Pragmatic Programmer"
+    ]
+  },
+  "education": [
+    {
+      "period": "2022 — 2026 · Currently 6th Semester",
+      "title": "B.Tech Computer Science Engineering",
+      "sub": "Specialization: Artificial Intelligence & Machine Learning",
+      "coursework": [
+        "Data Structures & Algorithms",
+        "Database Management",
+        "Operating Systems",
+        "Computer Networks",
+        "Machine Learning",
+        "Software Engineering"
+      ]
+    }
+  ],
+  "achievements": [
+    {
+      "icon": "🏆",
+      "title": "Club Head APEX",
+      "desc": "Leading the premier technical society driving innovation across campus"
+    },
+    {
+      "icon": "⚡",
+      "title": "MERN Stack Certified",
+      "desc": "Completed full-stack development with MongoDB, Express, React & Node.js"
+    },
+    {
+      "icon": "🧠",
+      "title": "AI Research Contributor",
+      "desc": "Active research in federated learning for privacy-preserving healthcare AI"
+    },
+    {
+      "icon": "📷",
+      "title": "Active Photographer",
+      "desc": "Official event photographer with 50+ major events covered"
+    },
+    {
+      "icon": "🚀",
+      "title": "Multiple Projects Shipped",
+      "desc": "10+ production-ready projects spanning AI, web, and systems"
+    }
+  ],
+  "photography": [
+    {
+      "emoji": "🌆",
+      "h": 280,
+      "label": "City Lights",
+      "url": ""
+    },
+    {
+      "emoji": "🎓",
+      "h": 200,
+      "label": "Graduation Day",
+      "url": ""
+    },
+    {
+      "emoji": "🖥️",
+      "h": 240,
+      "label": "Hackathon Night",
+      "url": ""
+    },
+    {
+      "emoji": "🌅",
+      "h": 200,
+      "label": "Golden Hour",
+      "url": ""
+    },
+    {
+      "emoji": "🎤",
+      "h": 260,
+      "label": "Tech Talk",
+      "url": ""
+    },
+    {
+      "emoji": "🌿",
+      "h": 220,
+      "label": "Nature Walk",
+      "url": ""
+    },
+    {
+      "emoji": "⚡",
+      "h": 200,
+      "label": "Workshop Vibes",
+      "url": ""
+    },
+    {
+      "emoji": "🌃",
+      "h": 280,
+      "label": "Night Cityscape",
+      "url": ""
+    },
+    {
+      "emoji": "🏛️",
+      "h": 240,
+      "label": "Campus Architecture",
+      "url": ""
+    }
+  ],
+  "blog": [
+    {
+      "category": "AI · Machine Learning",
+      "title": "Federated Learning: Privacy-First AI for Healthcare",
+      "excerpt": "How distributed model training without sharing raw data is revolutionizing medical AI research and protecting patient privacy.",
+      "date": "June 2025",
+      "readTime": "8 min read"
+    },
+    {
+      "category": "MERN Stack",
+      "title": "Building Scalable REST APIs with Node.js & Express",
+      "excerpt": "A practical guide to designing production-grade backend systems — authentication, rate limiting, and clean architecture patterns.",
+      "date": "May 2025",
+      "readTime": "6 min read"
+    },
+    {
+      "category": "DSA · Engineering",
+      "title": "Why Every AI Engineer Needs Strong DSA Fundamentals",
+      "excerpt": "From algorithm complexity to efficient data pipelines — why understanding data structures makes your ML code dramatically better.",
+      "date": "April 2025",
+      "readTime": "5 min read"
+    }
+  ],
+  "social": {
+    "email": "saurabhmaurya@email.com",
+    "github": "github.com/omega-saurab",
+    "linkedin": "linkedin.com/in/saurabhmaurya",
+    "instagram": "instagram.com/omega.saurab"
+  },
+  "socialFeeds": {
+    "linkedin": [
+      {
+        "id": "1",
+        "title": "Federated Learning in Modern Healthcare",
+        "excerpt": "Discussing the transition of healthcare institutions towards privacy-preserving AI models trained on localized patient metrics.",
+        "url": "#",
+        "image": ""
+      },
+      {
+        "id": "2",
+        "title": "B.Tech Graduation Pursuits & Projects",
+        "excerpt": "Reflecting on the last 3 years of building systems, scaling web backends, and conducting federated learning research.",
+        "url": "#",
+        "image": ""
+      },
+      {
+        "id": "3",
+        "title": "APEX Tech Expo 2025 Retrospective",
+        "excerpt": "A showcase of engineering and problem-solving. Honored to lead APEX and coordinate this year's campus tech fest.",
+        "url": "#",
+        "image": ""
+      },
+      {
+        "id": "4",
+        "title": "Why Solid DSA and System Design Matter",
+        "excerpt": "Code efficiency is critical when handling data-intensive pipelines. Here is why computer science fundamentals make you a better AI practitioner.",
+        "url": "#",
+        "image": ""
+      },
+      {
+        "id": "5",
+        "title": "Building Dynamic MERN Stack API Middleware",
+        "excerpt": "A deep dive into REST standardizations, rate limits, custom auth schemas, and database indexes.",
+        "url": "#",
+        "image": ""
+      },
+      {
+        "id": "6",
+        "title": "🚀 Progress Update: Strengthening My Foundations in DevOps & Cloud Infrastructure",
+        "excerpt": "I’ve recently focused on building a solid understanding of secure server access and cloud-based deployment, taking a step forward from application development into infrastructure management.\nHere’s a summary of what I’ve worked on:\n🔐 SSH Protocol — Understanding secure, encrypted communication for remote system access\n🔑 SSH Key-Based Authentication — Implementing passwordless and secure login mechanisms\n🗝️ Public & Private Key Generation — Working with cryptographic key pairs for authentication\n📂 Authorized Keys Configuration — Managing access control on remote servers",
+        "url": "https://www.linkedin.com/posts/saurabh-maurya14_devops-aws-cloudcomputing-ugcPost-7451",
+        "image": "https://media.licdn.com/dms/image/v2/D5622AQGFSHGwNXcYEw/feedshare-image-high-res/B56Z2kj8PqKgAU-/0/1776582378683?e=2147483647&v=beta&t=NHYGp5AJbSZlT2PZD4Mm_jHfX4b1rRBipMrM-7uVW2k"
+      }
+    ],
+    "githubRepos": [
+      {
+        "name": "parkinsons-detection-ai",
+        "desc": "Multimodal federated learning system for early stage Parkinson's prediction.",
+        "url": "https://github.com/omega-saurab/parkinsons-detection-ai",
+        "stars": 12,
+        "forks": 4
+      },
+      {
+        "name": "instagram-clone-js",
+        "desc": "Clean and responsive frontend Instagram copy using modern Javascript APIs.",
+        "url": "https://github.com/omega-saurab/instagram-clone-js",
+        "stars": 8,
+        "forks": 2
+      }
+    ],
+    "tweets": [
+      {
+        "id": "1",
+        "content": "Federated Learning is the future of healthcare AI. Protect patient privacy while training better models. 🧠💡",
+        "url": "#",
+        "date": "June 2026"
+      },
+      {
+        "id": "2",
+        "content": "Just completed my 30-day coding streak. Consistency is key! 💻🔥",
+        "url": "#",
+        "date": "May 2026"
+      },
+      {
+        "id": "3",
+        "content": "Excited to lead the new APEX Club workshop on Full Stack Engineering this weekend! ⚙️🌐",
+        "url": "#",
+        "date": "May 2026"
+      }
+    ]
+  },
+  "codingProfiles": {
+    "leetcode": { "username": "saurabhmaurya", "profileUrl": "https://leetcode.com/saurabhmaurya", "easy": 3, "medium": 0, "hard": 0, "total": 3 },
+    "gfg": { "username": "saurabhmaurya", "profileUrl": "https://www.geeksforgeeks.org/user/saurabhmaurya", "easy": 0, "medium": 0, "hard": 0, "total": 0 },
+    "codechef": { "username": "saurabh_maurya", "profileUrl": "https://www.codechef.com/users/saurabh_maurya", "rating": "Unrated", "easy": 0, "medium": 0, "hard": 0, "total": 0 },
+    "hackerrank": { "username": "saurabh_maurya14", "profileUrl": "https://www.hackerrank.com/profile/saurabh_maurya14", "stars": "Developer", "easy": 0, "medium": 0, "hard": 0, "total": 0 }
+  }
+}

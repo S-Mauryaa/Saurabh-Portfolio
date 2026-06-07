@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saurabh Maurya — Control Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Cabinet+Grotesk:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-0: #030712;
+  --bg-1: #0a0f1e;
+  --bg-2: #0f172a;
+  --blue: #38bdf8;
+  --purple: #8b5cf6;
+  --cyan: #22d3ee;
+  --pink: #f472b6;
+  --green: #4ade80;
+  --red: #f87171;
+  --glass: rgba(255,255,255,0.05);
+  --glass-border: rgba(255,255,255,0.08);
+  --glass-hover: rgba(255,255,255,0.1);
+  --text-1: #f8fafc;
+  --text-2: #94a3b8;
+  --text-3: #475569;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Cabinet Grotesk', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --radius: 16px;
+  --radius-sm: 8px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg-0);
+  color: var(--text-1);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NOISE OVERLAY */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.02; pointer-events: none; z-index: 9500;
+}
+
+/* LOGIN SCREEN */
+#login-screen {
+  position: fixed; inset: 0;
+  background: var(--bg-0);
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.login-card {
+  width: 100%; max-width: 400px;
+  padding: 40px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(20px);
+  text-align: center;
+  box-shadow: 0 0 80px rgba(139,92,246,0.15);
+}
+.login-logo {
+  font-family: var(--font-display);
+  font-size: 48px; font-weight: 800;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 24px;
+}
+.login-title {
+  font-size: 20px; font-weight: 700; margin-bottom: 8px;
+}
+.login-subtitle {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 32px;
+}
+
+/* DASHBOARD CONTAINER */
+#dashboard-container {
+  display: none; /* hidden until logged in */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 40px; border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 24px;
+}
+.dashboard-title h1 {
+  font-family: var(--font-display); font-size: 32px; font-weight: 800;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.dashboard-title p {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-2); letter-spacing: 1px; margin-top: 4px;
+}
+.header-actions { display: flex; gap: 16px; }
+
+/* BUTTONS */
+.btn {
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  padding: 10px 24px; border-radius: 30px; border: none;
+  cursor: pointer; transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+  text-decoration: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  color: white;
+}
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 0 20px rgba(56,189,248,0.3); }
+.btn-secondary {
+  background: var(--glass); border: 1px solid var(--glass-border);
+  color: var(--text-1);
+}
+.btn-secondary:hover { background: var(--glass-hover); border-color: var(--blue); color: var(--blue); }
+.btn-danger {
+  background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2);
+  color: var(--red);
+}
+.btn-danger:hover { background: rgba(248,113,113,0.2); border-color: var(--red); }
+.btn-sm { padding: 6px 14px; font-size: 11px; font-family: var(--font-mono); text-transform: uppercase; }
+
+/* TABS SIDEBAR / PANEL */
+.layout-grid {
+  display: grid; grid-template-columns: 240px 1fr; gap: 40px;
+  align-items: start;
+}
+.sidebar-nav {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.tab-link {
+  font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--text-2); background: transparent; border: 1px solid transparent;
+  padding: 14px 20px; border-radius: var(--radius-sm); text-align: left;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tab-link:hover { background: var(--glass); color: var(--text-1); }
+.tab-link.active {
+  background: var(--glass); border-color: var(--glass-border);
+  color: var(--blue); font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--blue);
+}
+.badge {
+  background: var(--purple); color: white; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-family: var(--font-mono);
+}
+
+.editor-panel {
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: var(--radius); padding: 40px;
+  backdrop-filter: blur(20px);
+  display: none;
+}
+.editor-panel.active { display: block; }
+.panel-header {
+  border-bottom: 1px solid var(--glass-border); padding-bottom: 20px; margin-bottom: 28px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.panel-header h2 {
+  font-family: var(--font-display); font-size: 24px; font-weight: 700;
+}
+
+/* FORMS */
+.form-group { margin-bottom: 24px; }
+.form-label {
+  display: block; font-family: var(--font-mono); font-size: 11px; color: var(--text-2);
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
+}
+.form-input, .form-textarea, .form-select {
+  width: 100%; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm); padding: 12px 16px; color: var(--text-1);
+  font-family: var(--font-body); font-size: 14px; outline: none;
+  transition: all 0.2s;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  border-color: var(--blue); background: rgba(56,189,248,0.02);
+}
+.form-textarea { resize: vertical; min-height: 100px; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* DYNAMIC ITEM CARD */
+.dynamic-item-card {
+  background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm); padding: 20px; margin-bottom: 20px;
+  position: relative;
+}
+.dynamic-item-card:hover { border-color: rgba(56,189,248,0.2); }
+.card-header-actions {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
+.card-header-actions h3 { font-family: var(--font-mono); font-size: 12px; color: var(--cyan); text-transform: uppercase; }
+
+/* INBOX MESSAGE CARD */
+.message-card {
+  border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.02); padding: 24px; margin-bottom: 16px;
+  transition: all 0.2s;
+}
+.message-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(139,92,246,0.3); }
+.message-meta {
+  display: flex; justify-content: space-between; border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 12px; margin-bottom: 12px; font-size: 13px; color: var(--text-2);
+}
+.message-body {
+  font-size: 14px; line-height: 1.6; color: var(--text-1); white-space: pre-wrap; margin-bottom: 16px;
+}
+
+/* ALERTS */
+.alert {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  padding: 16px 28px; border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.5px;
+  display: flex; align-items: center; gap: 12px;
+  transform: translateY(100px); opacity: 0; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.alert.show { transform: translateY(0); opacity: 1; }
+.alert-success { background: rgba(74,222,128,0.95); color: #022c22; box-shadow: 0 10px 30px rgba(74,222,128,0.3); }
+.alert-error { background: rgba(248,113,113,0.95); color: #450a0a; box-shadow: 0 10px 30px rgba(248,113,113,0.3); }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .layout-grid { grid-template-columns: 1fr; }
+  header { flex-direction: column; gap: 20px; text-align: center; }
+  .sidebar-nav { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ALERT BANNER -->
+<div id="alert-banner" class="alert"></div>
+
+<!-- LOGIN MODAL -->
+<section id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">S</div>
+    <h2 class="login-title">Control Panel</h2>
+    <p class="login-subtitle">Dashboard Security</p>
+    <div class="form-group" style="text-align: left;">
+      <label class="form-label" for="login-pass">Admin Password</label>
+      <input type="password" id="login-pass" class="form-input" style="text-align: center; font-size: 16px;" placeholder="••••••••" autofocus>
+    </div>
+    <button class="btn btn-primary" style="width: 100%; justify-content: center;" onclick="performLogin()">Authorize Access</button>
+  </div>
+</section>
+
+<!-- MAIN CONTROL PANEL -->
+<section id="dashboard-container">
+  <header>
+    <div class="dashboard-title">
+      <h1>Saurabh Maurya Control Panel</h1>
+      <p>Configure portfolio details, dynamic feeds, and image uploads</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="logout()">Logout</button>
+      <button class="btn btn-primary" onclick="publishChanges()">Publish Changes</button>
+    </div>
+  </header>
+
+  <div class="layout-grid">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar-nav">
+      <button class="tab-link active" onclick="switchTab('profile', this)">Profile</button>
+      <button class="tab-link" onclick="switchTab('skills', this)">Skills</button>
+      <button class="tab-link" onclick="switchTab('projects', this)">Projects</button>
+      <button class="tab-link" onclick="switchTab('experience', this)">Work Experience</button>
+      <button class="tab-link" onclick="switchTab('education-tab', this)">Academic Foundation</button>
+      <button class="tab-link" onclick="switchTab('coding-profiles', this)">Coding Profiles</button>
+      <button class="tab-link" onclick="switchTab('socials', this)">Social Hub</button>
+      <button class="tab-link" onclick="switchTab('now', this)">Now Column</button>
+      <button class="tab-link" onclick="switchTab('achievements', this)">Achievements</button>
+      <button class="tab-link" onclick="switchTab('photography', this)">Photography</button>
+      <button class="tab-link" onclick="switchTab('inbox', this)">Inbox <span class="badge" id="inbox-badge">0</span></button>
+    </div>
+
+    <!-- Edit Panels Container -->
+    <div class="panels-container">
+      
+      <!-- TAB: Profile -->
+      <div id="panel-profile" class="editor-panel active">
+        <div class="panel-header">
+          <h2>Profile Configuration</h2>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label">Greeting</label>
+            <input type="text" id="prof-greeting" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="prof-name" class="form-input">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subtitle / Key roles</label>
+          <input type="text" id="prof-subtitle" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Short Description (Hero Section)</label>
+          <textarea id="prof-desc" class="form-textarea"></textarea>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label">Available Tag text</label>
+            <input type="text" id="prof-available" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Resume PDF Link</label>
+            <input type="text" id="prof-resume" class="form-input">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">🖼️ Profile Photo URL (for About section)</label>
+          <input type="text" id="prof-photo-url" class="form-input" placeholder="https://example.com/your-photo.jpg">
+          <div style="margin-top:8px;font-size:12px;color:var(--text-3)">Upload your photo to Cloudinary/ImgBB and paste the URL here. It will show in the Who I Am section.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">About Paragraphs (One paragraph per line)</label>
+          <textarea id="prof-about-para" class="form-textarea" style="min-height: 120px;"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">About tags (Comma-separated)</label>
+          <input type="text" id="prof-about-tags" class="form-input">
+        </div>
+        
+        <!-- Editable stats targets -->
+        <h3 style="margin: 30px 0 16px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">Key Statistics</h3>
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label">Years Learning Count</label>
+            <input type="number" id="stat-years" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Projects Built Count</label>
+            <input type="number" id="stat-projects" class="form-input">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label">Technologies Count</label>
+            <input type="number" id="stat-tech" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hackathons Count</label>
+            <input type="number" id="stat-hacks" class="form-input">
+          </div>
+        </div>
+
+        <h3 style="margin: 30px 0 16px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;">Social Network Links</h3>
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="text" id="soc-email" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">GitHub Link (without https://)</label>
+            <input type="text" id="soc-github" class="form-input">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label class="form-label">LinkedIn Link (without https://)</label>
+            <input type="text" id="soc-linkedin" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Instagram Link (without https://)</label>
+            <input type="text" id="soc-instagram" class="form-input">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Skills -->
+      <div id="panel-skills" class="editor-panel">
+        <div class="panel-header">
+          <h2>Skills Arsenal</h2>
+          <button class="btn btn-secondary btn-sm" onclick="addSkillCategory()">Add Category</button>
+        </div>
+        <div id="skills-list-container">
+          <!-- Populated Dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB: Projects -->
+      <div id="panel-projects" class="editor-panel">
+        <div class="panel-header">
+          <h2>Projects Management</h2>
+          <button class="btn btn-secondary btn-sm" onclick="addNewProject()">Add New Project</button>
+        </div>
+        <div id="projects-list-container">
+          <!-- Populated Dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB: Work Experience -->
+      <div id="panel-experience" class="editor-panel">
+        <div class="panel-header">
+          <h2>Work Experience</h2>
+          <button class="btn btn-secondary btn-sm" onclick="addTimelineItem('experience')">Add Experience</button>
+        </div>
+        <div id="experience-list-container">
+          <!-- Populated Dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB: Academic Foundation -->
+      <div id="panel-education-tab" class="editor-panel">
+        <div class="panel-header">
+          <h2>Academic Foundation</h2>
+          <button class="btn btn-secondary btn-sm" onclick="addTimelineItem('education')">Add Education</button>
+        </div>
+        <div id="education-list-container">
+          <!-- Populated Dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB: Coding Profiles -->
+      <div id="panel-coding-profiles" class="editor-panel">
+        <div class="panel-header">
+          <h2>Coding Profiles Configuration</h2>
+        </div>
+        
+        <!-- LeetCode Card -->
+        <div class="dynamic-item-card">
+          <div class="card-header-actions">
+            <h3>LeetCode</h3>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="fetchCodingStats('leetcode')">Autofetch Stats</button>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Username</label>
+              <input type="text" id="cp-lc-user" class="form-input" placeholder="e.g. omega-saurab">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Profile URL</label>
+              <input type="text" id="cp-lc-url" class="form-input" placeholder="https://leetcode.com/username">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Solved: Easy</label>
+              <input type="number" id="cp-lc-easy" class="form-input" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solved: Medium</label>
+              <input type="number" id="cp-lc-medium" class="form-input" value="0">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Solved: Hard</label>
+              <input type="number" id="cp-lc-hard" class="form-input" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solved: Total</label>
+              <input type="number" id="cp-lc-total" class="form-input" value="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- GeeksforGeeks Card -->
+        <div class="dynamic-item-card">
+          <div class="card-header-actions">
+            <h3>GeeksforGeeks</h3>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="fetchCodingStats('gfg')">Autofetch Stats</button>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Username</label>
+              <input type="text" id="cp-gfg-user" class="form-input" placeholder="e.g. saurabhmaurya">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Profile URL</label>
+              <input type="text" id="cp-gfg-url" class="form-input" placeholder="https://geeksforgeeks.org/user/username">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Solved: Easy</label>
+              <input type="number" id="cp-gfg-easy" class="form-input" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solved: Medium</label>
+              <input type="number" id="cp-gfg-medium" class="form-input" value="0">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Solved: Hard</label>
+              <input type="number" id="cp-gfg-hard" class="form-input" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solved: Total</label>
+              <input type="number" id="cp-gfg-total" class="form-input" value="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- CodeChef Card -->
+        <div class="dynamic-item-card">
+          <div class="card-header-actions">
+            <h3>CodeChef</h3>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="fetchCodingStats('codechef')">Autofetch Stats</button>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Username</label>
+              <input type="text" id="cp-cc-user" class="form-input" placeholder="e.g. saurabh_maurya">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Profile URL</label>
+              <input type="text" id="cp-cc-url" class="form-input" placeholder="https://codechef.com/users/username">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Rating / Stars Text</label>
+              <input type="text" id="cp-cc-rating" class="form-input" placeholder="e.g. 1650 (3★)">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solved: Total</label>
+              <input type="number" id="cp-cc-total" class="form-input" value="0">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Solved: Easy</label>
+              <input type="number" id="cp-cc-easy" class="form-input" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solved: Medium</label>
+              <input type="number" id="cp-cc-medium" class="form-input" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solved: Hard</label>
+              <input type="number" id="cp-cc-hard" class="form-input" value="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- HackerRank Card -->
+        <div class="dynamic-item-card">
+          <div class="card-header-actions">
+            <h3>HackerRank</h3>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="fetchCodingStats('hackerrank')">Autofetch Stats</button>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Username</label>
+              <input type="text" id="cp-hr-user" class="form-input" placeholder="e.g. saurabh_maurya14">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Profile URL</label>
+              <input type="text" id="cp-hr-url" class="form-input" placeholder="https://hackerrank.com/profile/username">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Stars / Badge Info</label>
+              <input type="text" id="cp-hr-stars" class="form-input" placeholder="e.g. 5★ Problem Solving">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solved: Total</label>
+              <input type="number" id="cp-hr-total" class="form-input" value="0">
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group">
+              <label class="form-label">Solved: Easy</label>
+              <input type="number" id="cp-hr-easy" class="form-input" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solved: Medium</label>
+              <input type="number" id="cp-hr-medium" class="form-input" value="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Solved: Hard</label>
+              <input type="number" id="cp-hr-hard" class="form-input" value="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Social Hub Feeds -->
+      <div id="panel-socials" class="editor-panel">
+        <div class="panel-header">
+          <h2>Social Feeds Hub</h2>
+        </div>
+        
+        <h3 style="margin-bottom:16px; color:var(--blue)">LinkedIn Publications</h3>
+        <div id="linkedin-list-container">
+          <!-- Populated Dynamically -->
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="addLinkedInPost()" style="margin-bottom:32px">+ Add LinkedIn Post</button>
+
+        <h3 style="margin-bottom:16px; color:var(--cyan)">GitHub Repositories</h3>
+        <div id="githubrepos-list-container">
+          <!-- Populated Dynamically -->
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="addGitHubRepo()" style="margin-bottom:32px">+ Add Repo</button>
+
+        <h3 style="margin-bottom:16px; color:var(--purple)">Tweets (X) Thoughts</h3>
+        <div id="tweets-list-container">
+          <!-- Populated Dynamically -->
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="addTweetItem()" style="margin-bottom:32px">+ Add Tweet</button>
+      </div>
+
+      <!-- TAB: Now Column -->
+      <div id="panel-now" class="editor-panel">
+        <div class="panel-header">
+          <h2>"Currently Pursuing" Column</h2>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Currently Learning (One item per line)</label>
+          <textarea id="now-learning" class="form-textarea" style="min-height:120px"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Currently Building (One item per line)</label>
+          <textarea id="now-building" class="form-textarea" style="min-height:120px"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Currently Reading (One item per line)</label>
+          <textarea id="now-reading" class="form-textarea" style="min-height:120px"></textarea>
+        </div>
+      </div>
+
+      <!-- TAB: Achievements -->
+      <div id="panel-achievements" class="editor-panel">
+        <div class="panel-header">
+          <h2>Milestones & Achievements</h2>
+          <button class="btn btn-secondary btn-sm" onclick="addAchievement()">Add Achievement</button>
+        </div>
+        <div id="achieve-list-container">
+          <!-- Populated Dynamically -->
+        </div>
+      </div>
+
+
+
+      <!-- TAB: Photography -->
+      <div id="panel-photography" class="editor-panel">
+        <div class="panel-header">
+          <h2>Photography Captures</h2>
+          <button class="btn btn-secondary btn-sm" onclick="addPhotoItem()">Add Photo Card</button>
+        </div>
+        <div id="photo-list-container">
+          <!-- Populated Dynamically -->
+        </div>
+      </div>
+
+      <!-- TAB: Inbox -->
+      <div id="panel-inbox" class="editor-panel">
+        <div class="panel-header">
+          <h2>Inbox Messages Received</h2>
+          <button class="btn btn-secondary btn-sm" onclick="loadMessages()">Refresh List</button>
+        </div>
+        <div id="messages-list-container">
+          <!-- Populated Dynamically -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+// Authentication State
+let sessionToken = localStorage.getItem('omega_admin_token') || '';
+let loadedConfig = null;
+
+// On Load Hooks
+window.addEventListener('DOMContentLoaded', () => {
+  if (sessionToken) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard-container').style.display = 'block';
+    loadConfigData();
+    loadMessages();
+  }
+  
+  // Enter key in login password submits
+  document.getElementById('login-pass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') performLogin();
+  });
+});
+
+// showAlert
+function showAlert(text, isError = false) {
+  const alertEl = document.getElementById('alert-banner');
+  alertEl.textContent = text;
+  alertEl.className = `alert show ${isError ? 'alert-error' : 'alert-success'}`;
+  setTimeout(() => {
+    alertEl.classList.remove('show');
+  }, 4000);
+}
+
+// Login
+async function performLogin() {
+  const password = document.getElementById('login-pass').value;
+  if (!password) return;
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    
+    const result = await res.json();
+    if (res.ok && result.success) {
+      sessionToken = result.token;
+      localStorage.setItem('omega_admin_token', sessionToken);
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard-container').style.display = 'block';
+      loadConfigData();
+      loadMessages();
+      showAlert('Authorization success!');
+    } else {
+      showAlert(result.error || 'Authorization failed', true);
+    }
+  } catch (err) {
+    showAlert('Server unreachable', true);
+    console.error(err);
+  }
+}
+
+// Logout
+function logout() {
+  sessionToken = '';
+  localStorage.removeItem('omega_admin_token');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('dashboard-container').style.display = 'none';
+  document.getElementById('login-pass').value = '';
+}
+
+// Switch Tabs
+function switchTab(tabId, tabButton) {
+  document.querySelectorAll('.editor-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active'));
+  
+  document.getElementById(`panel-${tabId}`).classList.add('active');
+  tabButton.classList.add('active');
+}
+
+// Load dynamic config data from Express
+async function loadConfigData() {
+  try {
+    const res = await fetch('/api/config');
+    if (!res.ok) throw new Error('Failed to fetch config');
+    
+    loadedConfig = await res.json();
+    populateFormFields(loadedConfig);
+  } catch (err) {
+    showAlert('Failed to load portfolio database', true);
+    console.error(err);
+  }
+}
+
+// Fill editor fields
+function populateFormFields(data) {
+  // Profile
+  document.getElementById('prof-greeting').value = data.profile.greeting || '';
+  document.getElementById('prof-name').value = data.profile.name || '';
+  document.getElementById('prof-subtitle').value = data.profile.subtitle || '';
+  document.getElementById('prof-desc').value = data.profile.description || '';
+  document.getElementById('prof-available').value = data.profile.available || '';
+  document.getElementById('prof-resume').value = data.profile.resumeUrl || '';
+  document.getElementById('prof-photo-url').value = data.profile.photoUrl || '';
+  document.getElementById('prof-about-para').value = (data.profile.aboutParagraphs || []).join('\n');
+  document.getElementById('prof-about-tags').value = (data.profile.aboutTags || []).join(', ');
+  
+  // Set Stats
+  document.getElementById('stat-years').value = data.stats[0]?.target || 0;
+  document.getElementById('stat-projects').value = data.stats[1]?.target || 0;
+  document.getElementById('stat-tech').value = data.stats[2]?.target || 0;
+  document.getElementById('stat-hacks').value = data.stats[3]?.target || 0;
+  
+  // Socials links
+  document.getElementById('soc-email').value = data.social.email || '';
+  document.getElementById('soc-github').value = data.social.github || '';
+  document.getElementById('soc-linkedin').value = data.social.linkedin || '';
+  document.getElementById('soc-instagram').value = data.social.instagram || '';
+
+  // Now Section
+  document.getElementById('now-learning').value = (data.now.Learning || []).join('\n');
+  document.getElementById('now-building').value = (data.now.Building || []).join('\n');
+  document.getElementById('now-reading').value = (data.now.Reading || []).join('\n');
+
+  // Populate dynamic sub-lists
+  populateSkills(data.skills);
+  populateProjects(data.projects);
+  populateTimeline(data.timeline, data.education);
+  populateAchievements(data.achievements);
+  populatePhotography(data.photography);
+  
+  // Populate Coding Profiles
+  const cp = data.codingProfiles || { leetcode: {}, gfg: {}, codechef: {}, hackerrank: {} };
+  
+  document.getElementById('cp-lc-user').value = cp.leetcode?.username || '';
+  document.getElementById('cp-lc-url').value = cp.leetcode?.profileUrl || '';
+  document.getElementById('cp-lc-easy').value = cp.leetcode?.easy || 0;
+  document.getElementById('cp-lc-medium').value = cp.leetcode?.medium || 0;
+  document.getElementById('cp-lc-hard').value = cp.leetcode?.hard || 0;
+  document.getElementById('cp-lc-total').value = cp.leetcode?.total || 0;
+
+  document.getElementById('cp-gfg-user').value = cp.gfg?.username || '';
+  document.getElementById('cp-gfg-url').value = cp.gfg?.profileUrl || '';
+  document.getElementById('cp-gfg-easy').value = cp.gfg?.easy || 0;
+  document.getElementById('cp-gfg-medium').value = cp.gfg?.medium || 0;
+  document.getElementById('cp-gfg-hard').value = cp.gfg?.hard || 0;
+  document.getElementById('cp-gfg-total').value = cp.gfg?.total || 0;
+
+  document.getElementById('cp-cc-user').value = cp.codechef?.username || '';
+  document.getElementById('cp-cc-url').value = cp.codechef?.profileUrl || '';
+  document.getElementById('cp-cc-rating').value = cp.codechef?.rating || '';
+  document.getElementById('cp-cc-easy').value = cp.codechef?.easy || 0;
+  document.getElementById('cp-cc-medium').value = cp.codechef?.medium || 0;
+  document.getElementById('cp-cc-hard').value = cp.codechef?.hard || 0;
+  document.getElementById('cp-cc-total').value = cp.codechef?.total || 0;
+
+  document.getElementById('cp-hr-user').value = cp.hackerrank?.username || '';
+  document.getElementById('cp-hr-url').value = cp.hackerrank?.profileUrl || '';
+  document.getElementById('cp-hr-stars').value = cp.hackerrank?.stars || '';
+  document.getElementById('cp-hr-easy').value = cp.hackerrank?.easy || 0;
+  document.getElementById('cp-hr-medium').value = cp.hackerrank?.medium || 0;
+  document.getElementById('cp-hr-hard').value = cp.hackerrank?.hard || 0;
+  document.getElementById('cp-hr-total').value = cp.hackerrank?.total || 0;
+
+  // Social Feeds Hub Tab
+  const feeds = data.socialFeeds || { linkedin: [], githubRepos: [], tweets: [] };
+  populateLinkedIn(feeds.linkedin || []);
+  populateGitHubRepos(feeds.githubRepos || []);
+  populateTweets(feeds.tweets || []);
+}
+
+// Populate Skills
+function populateSkills(skillsObj) {
+  const container = document.getElementById('skills-list-container');
+  container.innerHTML = '';
+  
+  Object.entries(skillsObj).forEach(([cat, list]) => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-item-card';
+    card.innerHTML = `
+      <div class="card-header-actions">
+        <input type="text" class="form-input skill-cat-name" value="${cat}" style="font-weight:700; width:50%">
+        <button class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Remove Category</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Skills (One per line)</label>
+        <textarea class="form-textarea skill-cat-list" style="min-height:80px">${list.join('\n')}</textarea>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+function addSkillCategory() {
+  const container = document.getElementById('skills-list-container');
+  const card = document.createElement('div');
+  card.className = 'dynamic-item-card';
+  card.innerHTML = `
+    <div class="card-header-actions">
+      <input type="text" class="form-input skill-cat-name" placeholder="Category Name" style="font-weight:700; width:50%">
+      <button class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Remove Category</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Skills (One per line)</label>
+      <textarea class="form-textarea skill-cat-list" placeholder="Skill 1\nSkill 2" style="min-height:80px"></textarea>
+    </div>
+  `;
+  container.appendChild(card);
+}
+
+// Populate Projects
+function populateProjects(projectsList) {
+  const container = document.getElementById('projects-list-container');
+  container.innerHTML = '';
+  
+  projectsList.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-item-card proj-item-card';
+    card.innerHTML = `
+      <div class="card-header-actions">
+        <h3>Project Card</h3>
+        <button class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Delete Project</button>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">Icon / Emoji</label>
+          <input type="text" class="form-input proj-icon" value="${p.icon || ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input type="text" class="form-input proj-title" value="${p.title || ''}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea proj-desc" style="min-height:60px">${p.desc || ''}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tags (Comma-separated)</label>
+        <input type="text" class="form-input proj-tags" value="${(p.tags || []).join(', ')}">
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">Live Demo URL</label>
+          <input type="text" class="form-input proj-demo" value="${p.demo || ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">GitHub URL</label>
+          <input type="text" class="form-input proj-github" value="${p.github || ''}">
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+function addNewProject() {
+  const container = document.getElementById('projects-list-container');
+  const card = document.createElement('div');
+  card.className = 'dynamic-item-card proj-item-card';
+  card.innerHTML = `
+    <div class="card-header-actions">
+      <h3>New Project Card</h3>
+      <button class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Delete Project</button>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Icon / Emoji</label>
+        <input type="text" class="form-input proj-icon" placeholder="🧠">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-input proj-title" placeholder="Project Title">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea proj-desc" placeholder="Brief summary of the build..." style="min-height:60px"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tags (Comma-separated)</label>
+      <input type="text" class="form-input proj-tags" placeholder="React, Node.js">
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Live Demo URL</label>
+        <input type="text" class="form-input proj-demo" placeholder="#">
+      </div>
+      <div class="form-group">
+        <label class="form-label">GitHub URL</label>
+        <input type="text" class="form-input proj-github" placeholder="#">
+      </div>
+    </div>
+  `;
+  container.insertBefore(card, container.firstChild);
+}
+
+// Populate Timeline (Experience & Education)
+function populateTimeline(expList, eduList) {
+  const expContainer = document.getElementById('experience-list-container');
+  expContainer.innerHTML = '';
+  
+  expList.forEach(item => {
+    const card = createTimelineDOM(item, 'experience');
+    expContainer.appendChild(card);
+  });
+
+  const eduContainer = document.getElementById('education-list-container');
+  eduContainer.innerHTML = '';
+  
+  eduList.forEach(item => {
+    const card = createTimelineDOM(item, 'education');
+    eduContainer.appendChild(card);
+  });
+}
+function createTimelineDOM(item, type) {
+  const card = document.createElement('div');
+  card.className = `dynamic-item-card tl-item-card tl-${type}-card`;
+  
+  const isEdu = type === 'education';
+  const pointsLabel = isEdu ? 'Coursework (Comma-separated)' : 'Key Points (One point per line)';
+  const pointsVal = isEdu ? (item.coursework || []).join(', ') : (item.points || []).join('\n');
+  const textareaClass = isEdu ? 'tl-coursework' : 'tl-points';
+
+  card.innerHTML = `
+    <div class="card-header-actions">
+      <h3>${type === 'education' ? 'Education Block' : 'Experience Block'}</h3>
+      <button class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Remove Block</button>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Period / Duration</label>
+        <input type="text" class="form-input tl-period" value="${item.period || ''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-input tl-title" value="${item.title || ''}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Subtitle / Sub-header</label>
+      <input type="text" class="form-input tl-sub" value="${item.sub || ''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">${pointsLabel}</label>
+      <textarea class="form-textarea ${textareaClass}" style="min-height:80px">${pointsVal}</textarea>
+    </div>
+  `;
+  return card;
+}
+function addTimelineItem(type) {
+  const container = document.getElementById(type === 'education' ? 'education-list-container' : 'experience-list-container');
+  const card = createTimelineDOM({ period: '', title: '', sub: '', points: [], coursework: [] }, type);
+  container.insertBefore(card, container.firstChild);
+}
+
+// LinkedIn List Form
+function populateLinkedIn(list) {
+  const container = document.getElementById('linkedin-list-container');
+  container.innerHTML = '';
+  list.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-item-card linkedin-item-card';
+    card.innerHTML = `
+      <div class="card-header-actions">
+        <h3>LinkedIn Publication</h3>
+        <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Remove</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Publication / Post Link</label>
+        <div style="display:flex; gap:10px;">
+          <input type="text" class="form-input li-url" value="${p.url || ''}" placeholder="https://linkedin.com/posts/..." style="flex:1">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="autoFetchMetadata(this, 'linkedin')" style="white-space:nowrap; padding: 10px 14px; font-size:12px">Fetch Details</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Post Title</label>
+        <input type="text" class="form-input li-title" value="${p.title || ''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Post Excerpt</label>
+        <textarea class="form-textarea li-excerpt" style="min-height:50px">${p.excerpt || ''}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Post Image Card (Fetched/Uploaded)</label>
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px">
+          <input type="text" class="form-input li-image" value="${p.image || ''}" placeholder="/uploads/filename.jpg" style="flex:1">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="triggerFileUpload(this)" style="white-space:nowrap; padding: 10px 14px; font-size:12px">Upload Image</button>
+          <input type="file" accept="image/*" class="li-file-input" style="display:none" onchange="handleLinkedInImageUpload(this)">
+        </div>
+        <div class="li-preview-container" style="margin-top:10px; display:${p.image ? 'block' : 'none'}">
+          <img src="${p.image || ''}" class="li-preview" style="max-height:80px; border-radius:4px; border:1px solid var(--glass-border)">
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+function addLinkedInPost() {
+  const container = document.getElementById('linkedin-list-container');
+  const card = document.createElement('div');
+  card.className = 'dynamic-item-card linkedin-item-card';
+  card.innerHTML = `
+    <div class="card-header-actions">
+      <h3>New LinkedIn Publication</h3>
+      <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Remove</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Publication / Post Link</label>
+      <div style="display:flex; gap:10px;">
+        <input type="text" class="form-input li-url" placeholder="https://linkedin.com/posts/..." style="flex:1">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="autoFetchMetadata(this, 'linkedin')" style="white-space:nowrap; padding: 10px 14px; font-size:12px">Fetch Details</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Post Title</label>
+      <input type="text" class="form-input li-title" placeholder="New Post Topic">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Post Excerpt</label>
+      <textarea class="form-textarea li-excerpt" placeholder="Short description of the topic discussed..." style="min-height:50px"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Post Image Card</label>
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px">
+        <input type="text" class="form-input li-image" placeholder="/uploads/filename.jpg" style="flex:1">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerFileUpload(this)" style="white-space:nowrap; padding: 10px 14px; font-size:12px">Upload Image</button>
+        <input type="file" accept="image/*" class="li-file-input" style="display:none" onchange="handleLinkedInImageUpload(this)">
+      </div>
+      <div class="li-preview-container" style="margin-top:10px; display:none">
+        <img src="" class="li-preview" style="max-height:80px; border-radius:4px; border:1px solid var(--glass-border)">
+      </div>
+    </div>
+  `;
+  container.appendChild(card);
+}
+
+// LinkedIn image uploads
+async function handleLinkedInImageUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const card = input.closest('.linkedin-item-card');
+  const imgInput = card.querySelector('.li-image');
+  const previewContainer = card.querySelector('.li-preview-container');
+  const previewImg = card.querySelector('.li-preview');
+  
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const uploadBtn = card.querySelector('button');
+  const origText = uploadBtn.textContent;
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = 'Uploading...';
+
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${sessionToken}`
+      },
+      body: formData
+    });
+
+    const result = await res.json();
+    if (res.ok && result.success) {
+      imgInput.value = result.url;
+      previewImg.src = result.url;
+      previewContainer.style.display = 'block';
+      showAlert('LinkedIn post card uploaded successfully!');
+    } else {
+      showAlert(result.error || 'Upload failed', true);
+    }
+  } catch (err) {
+    showAlert('Server upload error', true);
+    console.error(err);
+  } finally {
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = origText;
+  }
+}
+
+// GitHub Repos dynamic editor
+function populateGitHubRepos(list) {
+  const container = document.getElementById('githubrepos-list-container');
+  container.innerHTML = '';
+  list.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-item-card ghrepo-item-card';
+    card.innerHTML = `
+      <div class="card-header-actions">
+        <h3>GitHub Repository</h3>
+        <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Remove</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Repository URL</label>
+        <div style="display:flex; gap:10px;">
+          <input type="text" class="form-input gh-repo-url" value="${r.url || ''}" placeholder="https://github.com/username/repo" style="flex:1">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="autoFetchMetadata(this, 'github')" style="white-space:nowrap; padding: 10px 14px; font-size:12px">Fetch Details</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">Repository Name</label>
+          <input type="text" class="form-input gh-repo-name" value="${r.name || ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Short Description</label>
+          <input type="text" class="form-input gh-repo-desc" value="${r.desc || ''}">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">Stars Count</label>
+          <input type="number" class="form-input gh-repo-stars" value="${r.stars || 0}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Forks Count</label>
+          <input type="number" class="form-input gh-repo-forks" value="${r.forks || 0}">
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+function addGitHubRepo() {
+  const container = document.getElementById('githubrepos-list-container');
+  const card = document.createElement('div');
+  card.className = 'dynamic-item-card ghrepo-item-card';
+  card.innerHTML = `
+    <div class="card-header-actions">
+      <h3>New GitHub Repository</h3>
+      <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Remove</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Repository URL</label>
+      <div style="display:flex; gap:10px;">
+        <input type="text" class="form-input gh-repo-url" placeholder="https://github.com/username/repo" style="flex:1">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="autoFetchMetadata(this, 'github')" style="white-space:nowrap; padding: 10px 14px; font-size:12px">Fetch Details</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Repository Name</label>
+        <input type="text" class="form-input gh-repo-name" placeholder="my-awesome-repo">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Short Description</label>
+        <input type="text" class="form-input gh-repo-desc" placeholder="Brief summary of what this code does...">
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Stars Count</label>
+        <input type="number" class="form-input gh-repo-stars" value="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Forks Count</label>
+        <input type="number" class="form-input gh-repo-forks" value="0">
+      </div>
+    </div>
+  `;
+  container.appendChild(card);
+}
+
+// Tweets dynamic editor
+function populateTweets(list) {
+  const container = document.getElementById('tweets-list-container');
+  container.innerHTML = '';
+  list.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-item-card tweet-item-card';
+    card.innerHTML = `
+      <div class="card-header-actions">
+        <h3>X / Tweet Entry</h3>
+        <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Remove</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tweet URL Link</label>
+        <div style="display:flex; gap:10px;">
+          <input type="text" class="form-input tweet-url" value="${t.url || ''}" placeholder="https://x.com/username/status/..." style="flex:1">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="autoFetchMetadata(this, 'tweet')" style="white-space:nowrap; padding: 10px 14px; font-size:12px">Fetch Details</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tweet Content</label>
+        <textarea class="form-textarea tweet-content" style="min-height:50px">${t.content || ''}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Publication Date</label>
+        <input type="text" class="form-input tweet-date" value="${t.date || ''}">
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+function addTweetItem() {
+  const container = document.getElementById('tweets-list-container');
+  const card = document.createElement('div');
+  card.className = 'dynamic-item-card tweet-item-card';
+  card.innerHTML = `
+    <div class="card-header-actions">
+      <h3>New X / Tweet Entry</h3>
+      <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Remove</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tweet URL Link</label>
+      <div style="display:flex; gap:10px;">
+        <input type="text" class="form-input tweet-url" placeholder="https://x.com/username/status/..." style="flex:1">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="autoFetchMetadata(this, 'tweet')" style="white-space:nowrap; padding: 10px 14px; font-size:12px">Fetch Details</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tweet Content</label>
+      <textarea class="form-textarea tweet-content" placeholder="Type tweet content here..." style="min-height:50px"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Publication Date</label>
+      <input type="text" class="form-input tweet-date" placeholder="June 2026">
+    </div>
+  `;
+  container.appendChild(card);
+}
+
+// Populate Achievements
+function populateAchievements(achievements) {
+  const container = document.getElementById('achieve-list-container');
+  container.innerHTML = '';
+  
+  achievements.forEach(a => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-item-card achieve-item-card';
+    card.innerHTML = `
+      <div class="card-header-actions">
+        <h3>Achievement</h3>
+        <button class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Delete</button>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">Emoji / Icon</label>
+          <input type="text" class="form-input achieve-icon" value="${a.icon || ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input type="text" class="form-input achieve-title" value="${a.title || ''}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea achieve-desc" style="min-height:50px">${a.desc || ''}</textarea>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+function addAchievement() {
+  const container = document.getElementById('achieve-list-container');
+  const card = document.createElement('div');
+  card.className = 'dynamic-item-card achieve-item-card';
+  card.innerHTML = `
+    <div class="card-header-actions">
+      <h3>New Achievement</h3>
+      <button class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Delete</button>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Emoji / Icon</label>
+        <input type="text" class="form-input achieve-icon" placeholder="🏆">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-input achieve-title" placeholder="Achievement Name">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea class="form-textarea achieve-desc" placeholder="Details..." style="min-height:50px"></textarea>
+    </div>
+  `;
+  container.insertBefore(card, container.firstChild);
+}
+
+
+
+// Populate Photography (Supports Emoji and Image File Uploads)
+function populatePhotography(photos) {
+  const container = document.getElementById('photo-list-container');
+  container.innerHTML = '';
+  
+  photos.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'dynamic-item-card photo-item-card';
+    card.innerHTML = `
+      <div class="card-header-actions">
+        <h3>Photo Card</h3>
+        <button class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Delete</button>
+      </div>
+      <div class="row">
+        <div class="form-group">
+          <label class="form-label">Emoji Representation (Fallback)</label>
+          <input type="text" class="form-input photo-emoji" value="${p.emoji || ''}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Height (px) in Masonry layout</label>
+          <input type="number" class="form-input photo-height" value="${p.h || 200}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Label / Caption</label>
+        <input type="text" class="form-input photo-label" value="${p.label || ''}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Image URL / Local Upload</label>
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px">
+          <input type="text" class="form-input photo-url" value="${p.url || ''}" placeholder="/uploads/filename.jpg" style="flex:1">
+          <button class="btn btn-secondary btn-sm" onclick="triggerFileUpload(this)" style="white-space:nowrap; padding: 10px 14px; font-size:12px">Upload File</button>
+          <input type="file" accept="image/*" class="photo-file-input" style="display:none" onchange="handlePhotoUpload(this)">
+        </div>
+        <div class="photo-preview-container" style="margin-top:10px; display:${p.url ? 'block' : 'none'}">
+          <img src="${p.url || ''}" class="photo-preview" style="max-height:80px; border-radius:4px; border:1px solid var(--glass-border)">
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+function addPhotoItem() {
+  const container = document.getElementById('photo-list-container');
+  const card = document.createElement('div');
+  card.className = 'dynamic-item-card photo-item-card';
+  card.innerHTML = `
+    <div class="card-header-actions">
+      <h3>New Photo Card</h3>
+      <button class="btn btn-danger btn-sm" onclick="this.closest('.dynamic-item-card').remove()">Delete</button>
+    </div>
+    <div class="row">
+      <div class="form-group">
+        <label class="form-label">Emoji Representation (Fallback)</label>
+        <input type="text" class="form-input photo-emoji" placeholder="📸">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Height (px) in Masonry layout</label>
+        <input type="number" class="form-input photo-height" placeholder="200" value="200">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Label / Caption</label>
+      <input type="text" class="form-input photo-label" placeholder="Campus View">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Image URL / Local Upload</label>
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px">
+        <input type="text" class="form-input photo-url" placeholder="/uploads/filename.jpg" style="flex:1">
+        <button class="btn btn-secondary btn-sm" onclick="triggerFileUpload(this)" style="white-space:nowrap; padding: 10px 14px; font-size:12px">Upload File</button>
+        <input type="file" accept="image/*" class="photo-file-input" style="display:none" onchange="handlePhotoUpload(this)">
+      </div>
+      <div class="photo-preview-container" style="margin-top:10px; display:none">
+        <img src="" class="photo-preview" style="max-height:80px; border-radius:4px; border:1px solid var(--glass-border)">
+      </div>
+    </div>
+  `;
+  container.insertBefore(card, container.firstChild);
+}
+
+// Trigger upload file click
+function triggerFileUpload(btn) {
+  const fileInput = btn.nextElementSibling;
+  fileInput.click();
+}
+
+// Handles actual upload to Node Express endpoint
+async function handlePhotoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const card = input.closest('.photo-item-card');
+  const urlInput = card.querySelector('.photo-url');
+  const previewContainer = card.querySelector('.photo-preview-container');
+  const previewImg = card.querySelector('.photo-preview');
+  
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const uploadBtn = card.querySelector('button');
+  const origText = uploadBtn.textContent;
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = 'Uploading...';
+
+  try {
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${sessionToken}`
+      },
+      body: formData
+    });
+
+    const result = await res.json();
+    if (res.ok && result.success) {
+      urlInput.value = result.url;
+      previewImg.src = result.url;
+      previewContainer.style.display = 'block';
+      showAlert('Image uploaded successfully!');
+    } else {
+      showAlert(result.error || 'Upload failed', true);
+    }
+  } catch (err) {
+    showAlert('Server upload error', true);
+    console.error(err);
+  } finally {
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = origText;
+  }
+}
+
+// Load contact inquiries
+async function loadMessages() {
+  try {
+    const res = await fetch('/api/messages', {
+      headers: { 'Authorization': `Bearer ${sessionToken}` }
+    });
+    if (!res.ok) throw new Error('Unauthorized or read failure');
+    
+    const messages = await res.json();
+    document.getElementById('inbox-badge').textContent = messages.length;
+    
+    const container = document.getElementById('messages-list-container');
+    container.innerHTML = '';
+    
+    if (messages.length === 0) {
+      container.innerHTML = '<p style="font-family:var(--font-mono); color:var(--text-3); text-align:center; padding:40px 0;">No messages received yet.</p>';
+      return;
+    }
+    
+    messages.forEach(m => {
+      const card = document.createElement('div');
+      card.className = 'message-card';
+      const formattedDate = new Date(m.date).toLocaleString();
+      card.innerHTML = `
+        <div class="message-meta">
+          <div>
+            <strong>${m.name}</strong> (<a href="mailto:${m.email}" style="color:var(--cyan); text-decoration:none">${m.email}</a>)
+          </div>
+          <div>${formattedDate}</div>
+        </div>
+        <div style="font-size:12px; font-family:var(--font-mono); color:var(--purple); margin-bottom:8px">Subject: ${m.subject}</div>
+        <div class="message-body">${m.message}</div>
+        <div style="text-align:right">
+          <button class="btn btn-danger btn-sm" onclick="deleteMessage('${m.id}', this)">Delete Message</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    console.error('Failed to load messages:', err);
+  }
+}
+
+// Delete contact inquiry
+async function deleteMessage(id, btn) {
+  if (!confirm('Are you sure you want to delete this message?')) return;
+  
+  btn.disabled = true;
+  btn.textContent = 'Deleting...';
+  
+  try {
+    // Try route-param style first (Express local dev), fallback to query-param (Vercel)
+    const res = await fetch(`/api/messages/${id}`, {
+      method: 'DELETE',
+      headers: { 
+        'Authorization': `Bearer ${sessionToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    // If server returns 404 or 405, try query param approach (Vercel)
+    let data;
+    try { data = await res.json(); } catch (e) { data = {}; }
+    
+    if (res.ok && (data.success !== false)) {
+      showAlert('Message deleted successfully');
+      loadMessages();
+    } else {
+      showAlert(data.error || 'Failed to delete message', true);
+      btn.disabled = false;
+      btn.textContent = 'Delete Message';
+    showAlert('Network error occurred', true);
+    btn.disabled = false;
+    btn.textContent = 'Delete Message';
+  }
+}
+
+// Publish Changes to Server
+async function publishChanges() {
+  if (!loadedConfig) return;
+
+  const payload = {
+    profile: {
+      greeting: document.getElementById('prof-greeting').value,
+      name: document.getElementById('prof-name').value,
+      subtitle: document.getElementById('prof-subtitle').value,
+      description: document.getElementById('prof-desc').value,
+      available: document.getElementById('prof-available').value,
+      resumeUrl: document.getElementById('prof-resume').value,
+      photoUrl: document.getElementById('prof-photo-url').value.trim(),
+      aboutParagraphs: document.getElementById('prof-about-para').value.split('\n').filter(p => p.trim() !== ''),
+      aboutTags: document.getElementById('prof-about-tags').value.split(',').map(t => t.trim()).filter(t => t !== '')
+    },
+    stats: [
+      { "label": "Years Learning", "target": parseInt(document.getElementById('stat-years').value) || 0 },
+      { "label": "Projects Built", "target": parseInt(document.getElementById('stat-projects').value) || 0 },
+      { "label": "Technologies", "target": parseInt(document.getElementById('stat-tech').value) || 0 },
+      { "label": "Hackathons", "target": parseInt(document.getElementById('stat-hacks').value) || 0 }
+    ],
+    skills: {},
+    timeline: [],
+    projects: [],
+    githubStats: loadedConfig.githubStats || { totalCommits: '500+', repos: '10+', streak: '30+', hackathons: '5' },
+    now: {
+      Learning: document.getElementById('now-learning').value.split('\n').filter(p => p.trim() !== ''),
+      Building: document.getElementById('now-building').value.split('\n').filter(p => p.trim() !== ''),
+      Reading: document.getElementById('now-reading').value.split('\n').filter(p => p.trim() !== '')
+    },
+    codingProfiles: {
+      leetcode: {
+        username: document.getElementById('cp-lc-user').value.trim(),
+        profileUrl: document.getElementById('cp-lc-url').value.trim(),
+        easy: parseInt(document.getElementById('cp-lc-easy').value) || 0,
+        medium: parseInt(document.getElementById('cp-lc-medium').value) || 0,
+        hard: parseInt(document.getElementById('cp-lc-hard').value) || 0,
+        total: parseInt(document.getElementById('cp-lc-total').value) || 0
+      },
+      gfg: {
+        username: document.getElementById('cp-gfg-user').value.trim(),
+        profileUrl: document.getElementById('cp-gfg-url').value.trim(),
+        easy: parseInt(document.getElementById('cp-gfg-easy').value) || 0,
+        medium: parseInt(document.getElementById('cp-gfg-medium').value) || 0,
+        hard: parseInt(document.getElementById('cp-gfg-hard').value) || 0,
+        total: parseInt(document.getElementById('cp-gfg-total').value) || 0
+      },
+      codechef: {
+        username: document.getElementById('cp-cc-user').value.trim(),
+        profileUrl: document.getElementById('cp-cc-url').value.trim(),
+        rating: document.getElementById('cp-cc-rating').value.trim(),
+        easy: parseInt(document.getElementById('cp-cc-easy').value) || 0,
+        medium: parseInt(document.getElementById('cp-cc-medium').value) || 0,
+        hard: parseInt(document.getElementById('cp-cc-hard').value) || 0,
+        total: parseInt(document.getElementById('cp-cc-total').value) || 0
+      },
+      hackerrank: {
+        username: document.getElementById('cp-hr-user').value.trim(),
+        profileUrl: document.getElementById('cp-hr-url').value.trim(),
+        stars: document.getElementById('cp-hr-stars').value.trim(),
+        easy: parseInt(document.getElementById('cp-hr-easy').value) || 0,
+        medium: parseInt(document.getElementById('cp-hr-medium').value) || 0,
+        hard: parseInt(document.getElementById('cp-hr-hard').value) || 0,
+        total: parseInt(document.getElementById('cp-hr-total').value) || 0
+      }
+    },
+    education: [],
+    achievements: [],
+    photography: [],
+    blog: loadedConfig.blog || [],
+    social: {
+      email: document.getElementById('soc-email').value,
+      github: document.getElementById('soc-github').value,
+      linkedin: document.getElementById('soc-linkedin').value,
+      instagram: document.getElementById('soc-instagram').value
+    },
+    socialFeeds: {
+      linkedin: [],
+      githubRepos: [],
+      tweets: []
+    }
+  };
+
+  // Rebuild skills
+  document.querySelectorAll('#skills-list-container .dynamic-item-card').forEach(card => {
+    const cat = card.querySelector('.skill-cat-name').value.trim();
+    const list = card.querySelector('.skill-cat-list').value.split('\n').map(s => s.trim()).filter(s => s !== '');
+    if (cat) {
+      payload.skills[cat] = list;
+    }
+  });
+
+  // Rebuild Projects
+  document.querySelectorAll('#projects-list-container .proj-item-card').forEach(card => {
+    payload.projects.push({
+      icon: card.querySelector('.proj-icon').value.trim(),
+      title: card.querySelector('.proj-title').value.trim(),
+      desc: card.querySelector('.proj-desc').value.trim(),
+      tags: card.querySelector('.proj-tags').value.split(',').map(t => t.trim()).filter(t => t !== ''),
+      demo: card.querySelector('.proj-demo').value.trim(),
+      github: card.querySelector('.proj-github').value.trim()
+    });
+  });
+
+  // Rebuild Timeline (Experience & Education)
+  document.querySelectorAll('#experience-list-container .tl-experience-card').forEach(card => {
+    payload.timeline.push({
+      period: card.querySelector('.tl-period').value.trim(),
+      title: card.querySelector('.tl-title').value.trim(),
+      sub: card.querySelector('.tl-sub').value.trim(),
+      points: card.querySelector('.tl-points').value.split('\n').map(p => p.trim()).filter(p => p !== '')
+    });
+  });
+
+  document.querySelectorAll('#education-list-container .tl-education-card').forEach(card => {
+    payload.education.push({
+      period: card.querySelector('.tl-period').value.trim(),
+      title: card.querySelector('.tl-title').value.trim(),
+      sub: card.querySelector('.tl-sub').value.trim(),
+      coursework: card.querySelector('.tl-coursework').value.split(',').map(c => c.trim()).filter(c => c !== '')
+    });
+  });
+
+  // Rebuild Achievements
+  document.querySelectorAll('#achieve-list-container .achieve-item-card').forEach(card => {
+    payload.achievements.push({
+      icon: card.querySelector('.achieve-icon').value.trim(),
+      title: card.querySelector('.achieve-title').value.trim(),
+      desc: card.querySelector('.achieve-desc').value.trim()
+    });
+  });
+
+  // Rebuild Photography
+  document.querySelectorAll('#photo-list-container .photo-item-card').forEach(card => {
+    payload.photography.push({
+      emoji: card.querySelector('.photo-emoji').value.trim(),
+      h: parseInt(card.querySelector('.photo-height').value) || 200,
+      label: card.querySelector('.photo-label').value.trim(),
+      url: card.querySelector('.photo-url').value.trim()
+    });
+  });
+
+  // Rebuild LinkedIn posts
+  document.querySelectorAll('#linkedin-list-container .linkedin-item-card').forEach((card, idx) => {
+    payload.socialFeeds.linkedin.push({
+      id: (idx + 1).toString(),
+      title: card.querySelector('.li-title').value.trim(),
+      excerpt: card.querySelector('.li-excerpt').value.trim(),
+      url: card.querySelector('.li-url').value.trim(),
+      image: card.querySelector('.li-image').value.trim()
+    });
+  });
+
+  // Rebuild GitHub Repos
+  document.querySelectorAll('#githubrepos-list-container .ghrepo-item-card').forEach(card => {
+    payload.socialFeeds.githubRepos.push({
+      name: card.querySelector('.gh-repo-name').value.trim(),
+      desc: card.querySelector('.gh-repo-desc').value.trim(),
+      url: card.querySelector('.gh-repo-url').value.trim(),
+      stars: parseInt(card.querySelector('.gh-repo-stars').value) || 0,
+      forks: parseInt(card.querySelector('.gh-repo-forks').value) || 0
+    });
+  });
+
+  // Rebuild Tweets
+  document.querySelectorAll('#tweets-list-container .tweet-item-card').forEach((card, idx) => {
+    payload.socialFeeds.tweets.push({
+      id: (idx + 1).toString(),
+      content: card.querySelector('.tweet-content').value.trim(),
+      url: card.querySelector('.tweet-url').value.trim(),
+      date: card.querySelector('.tweet-date').value.trim()
+    });
+  });
+
+  // Save via REST endpoint
+  try {
+    const res = await fetch('/api/config', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionToken}`
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    const result = await res.json();
+    if (res.ok && result.success) {
+      showAlert('All changes published successfully! Dynamic contents updated.');
+      loadConfigData();
+    } else {
+      showAlert(result.error || 'Failed to publish configuration changes', true);
+    }
+  } catch (err) {
+    showAlert('Server unreachable', true);
+    console.error(err);
+  }
+}
+
+async function fetchCodingStats(platform) {
+  let userField = '';
+  if (platform === 'leetcode') userField = 'cp-lc-user';
+  else if (platform === 'gfg') userField = 'cp-gfg-user';
+  else if (platform === 'codechef') userField = 'cp-cc-user';
+  else if (platform === 'hackerrank') userField = 'cp-hr-user';
+
+  const username = document.getElementById(userField).value.trim();
+  if (!username) {
+    alert('Please enter a username first');
+    return;
+  }
+
+  const btn = event.currentTarget || document.activeElement;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Fetching...';
+
+  try {
+    const res = await fetch('/api/fetch-coding-stats', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionToken}`
+      },
+      body: JSON.stringify({ platform, username })
+    });
+
+    if (res.ok) {
+      const result = await res.json();
+      const data = result.data;
+      
+      if (platform === 'leetcode') {
+        document.getElementById('cp-lc-easy').value = data.easy || 0;
+        document.getElementById('cp-lc-medium').value = data.medium || 0;
+        document.getElementById('cp-lc-hard').value = data.hard || 0;
+        document.getElementById('cp-lc-total').value = data.total || 0;
+      } else if (platform === 'gfg') {
+        document.getElementById('cp-gfg-easy').value = data.easy || 0;
+        document.getElementById('cp-gfg-medium').value = data.medium || 0;
+        document.getElementById('cp-gfg-hard').value = data.hard || 0;
+        document.getElementById('cp-gfg-total').value = data.total || 0;
+      } else if (platform === 'codechef') {
+        document.getElementById('cp-cc-rating').value = data.rating || '';
+        document.getElementById('cp-cc-easy').value = data.easy || 0;
+        document.getElementById('cp-cc-medium').value = data.medium || 0;
+        document.getElementById('cp-cc-hard').value = data.hard || 0;
+        document.getElementById('cp-cc-total').value = data.total || 0;
+      } else if (platform === 'hackerrank') {
+        document.getElementById('cp-hr-stars').value = data.stars || '';
+        document.getElementById('cp-hr-easy').value = data.easy || 0;
+        document.getElementById('cp-hr-medium').value = data.medium || 0;
+        document.getElementById('cp-hr-hard').value = data.hard || 0;
+        document.getElementById('cp-hr-total').value = data.total || 0;
+      }
+      showAlert(`Successfully fetched ${platform} stats!`);
+    } else {
+      const errJson = await res.json();
+      showAlert(errJson.error || 'Failed to fetch stats', true);
+    }
+  } catch (err) {
+    console.error(err);
+    showAlert('Error fetching statistics', true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+async function autoFetchMetadata(btn, type) {
+  const card = btn.closest('.dynamic-item-card');
+  let urlInput;
+  if (type === 'linkedin') {
+    urlInput = card.querySelector('.li-url');
+  } else if (type === 'github') {
+    urlInput = card.querySelector('.gh-repo-url');
+  } else if (type === 'tweet') {
+    urlInput = card.querySelector('.tweet-url');
+  }
+  
+  const url = urlInput.value.trim();
+  if (!url) {
+    showAlert('Please input a valid URL first.', true);
+    return;
+  }
+
+  const origText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Fetching...';
+
+  try {
+    const res = await fetch('/api/fetch-metadata', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${sessionToken}`
+      },
+      body: JSON.stringify({ url })
+    });
+
+    const result = await res.json();
+    if (res.ok && result.success) {
+      const data = result.data;
+      if (type === 'linkedin') {
+        card.querySelector('.li-title').value = data.title || '';
+        card.querySelector('.li-excerpt').value = data.excerpt || '';
+        if (data.image) {
+          card.querySelector('.li-image').value = data.image;
+          const previewContainer = card.querySelector('.li-preview-container');
+          const previewImg = card.querySelector('.li-preview');
+          previewImg.src = data.image;
+          previewContainer.style.display = 'block';
+        } else {
+          card.querySelector('.li-image').value = '';
+          card.querySelector('.li-preview-container').style.display = 'none';
+        }
+      } else if (type === 'github') {
+        card.querySelector('.gh-repo-name').value = data.title || '';
+        card.querySelector('.gh-repo-desc').value = data.excerpt || '';
+        card.querySelector('.gh-repo-stars').value = data.stars || 0;
+        card.querySelector('.gh-repo-forks').value = data.forks || 0;
+      } else if (type === 'tweet') {
+        card.querySelector('.tweet-content').value = data.excerpt || '';
+        card.querySelector('.tweet-date').value = data.date || '';
+      }
+      showAlert('Details fetched automatically from link!');
+    } else {
+      showAlert(result.error || 'Failed to fetch details from link.', true);
+    }
+  } catch (err) {
+    showAlert('Error connecting to scraper service.', true);
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origText;
+  }
+}
+</script>
+</body>
+</html>
