@@ -711,7 +711,16 @@ async function performLogin() {
       body: JSON.stringify({ password })
     });
     
-    const result = await res.json();
+    let result;
+    try {
+      result = await res.json();
+    } catch (parseErr) {
+      const text = await res.text().catch(() => '');
+      console.error('Failed to parse JSON response:', text);
+      showAlert(`Server error (${res.status}): ${text.substring(0, 100)}`, true);
+      return;
+    }
+
     if (res.ok && result.success) {
       sessionToken = result.token;
       localStorage.setItem('omega_admin_token', sessionToken);
@@ -724,7 +733,7 @@ async function performLogin() {
       showAlert(result.error || 'Authorization failed', true);
     }
   } catch (err) {
-    showAlert('Server unreachable', true);
+    showAlert(`Connection failed: ${err.message}`, true);
     console.error(err);
   }
 }
@@ -751,12 +760,15 @@ function switchTab(tabId, tabButton) {
 async function loadConfigData() {
   try {
     const res = await fetch('/api/config');
-    if (!res.ok) throw new Error('Failed to fetch config');
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`HTTP ${res.status}: ${text.substring(0, 50)}`);
+    }
     
     loadedConfig = await res.json();
     populateFormFields(loadedConfig);
   } catch (err) {
-    showAlert('Failed to load portfolio database', true);
+    showAlert(`Failed to load database: ${err.message}`, true);
     console.error(err);
   }
 }
@@ -1486,7 +1498,15 @@ async function loadMessages() {
     const res = await fetch('/api/messages', {
       headers: { 'Authorization': `Bearer ${sessionToken}` }
     });
-    if (!res.ok) throw new Error('Unauthorized or read failure');
+    if (res.status === 401) {
+      logout();
+      showAlert('Session expired. Please log in again.', true);
+      return;
+    }
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`HTTP ${res.status}: ${text.substring(0, 50)}`);
+    }
     
     const messages = await res.json();
     document.getElementById('inbox-badge').textContent = messages.length;
@@ -1743,7 +1763,21 @@ async function publishChanges() {
       body: JSON.stringify(payload)
     });
     
-    const result = await res.json();
+    if (res.status === 401) {
+      logout();
+      showAlert('Session expired. Please log in again.', true);
+      return;
+    }
+    
+    let result;
+    try {
+      result = await res.json();
+    } catch (parseErr) {
+      const text = await res.text().catch(() => '');
+      showAlert(`Publish failed (HTTP ${res.status}): ${text.substring(0, 50)}`, true);
+      return;
+    }
+
     if (res.ok && result.success) {
       showAlert('All changes published successfully! Dynamic contents updated.');
       loadConfigData();
@@ -1751,7 +1785,7 @@ async function publishChanges() {
       showAlert(result.error || 'Failed to publish configuration changes', true);
     }
   } catch (err) {
-    showAlert('Server unreachable', true);
+    showAlert(`Publish failed: ${err.message}`, true);
     console.error(err);
   }
 }
